@@ -1,0 +1,60 @@
+---
+swagger: "2.0"
+info:
+  title: "$${stageVariables.title}"
+basePath: ${env}
+schemes:
+- "https"
+paths:
+  /prueba:
+    get:
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/Empty"
+      x-amazon-apigateway-integration:
+        uri: "http://$${stageVariables.nlb_dns}:5000"
+        connectionId: "$${stageVariables.vpcLinkId}"
+        httpMethod: "GET"
+        responses:
+          default:
+            statusCode: "200"
+        connectionType: "VPC_LINK"
+        passthroughBehavior: "when_no_match"
+        type: "http"
+    options:
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/Empty"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+        requestTemplates:
+          application/json: "{\"statusCode\": 200}"
+        passthroughBehavior: "when_no_match"
+        type: "mock"
+definitions:
+  Empty:
+    type: "object"
+    title: "Empty Schema"
